@@ -1,38 +1,183 @@
 .App {
+  font-family: 'Arial', sans-serif;
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  margin: 0;
+  background-color: #f9f9f9; /* Light background for better contrast */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  justify-content: center; /* Center vertically */
+  align-items: center; /* Center horizontally */
+  min-height: 100vh; /* Full viewport height */
+}
+
+.App img {
+  border-radius: 50%;
+  width: 120px; /* Slightly larger profile picture */
+  height: 120px;
+  margin: 15px 0;
+  border: 3px solid #007bff; /* Add border to profile picture */
+}
+
+.App div {
+  margin: 15px 0;
+}
+
+button {
+  background-color: #007bff;
   color: white;
+  border: none;
+  padding: 12px 25px; /* Consistent padding */
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+  width: 200px; /* Fixed width for all buttons */
+  text-align: center; /* Center text inside the button */
 }
 
-.App-link {
-  color: #61dafb;
+button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05); /* Slight zoom effect on hover */
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+span {
+  font-size: 20px; /* Larger font for better readability */
+  font-weight: bold;
+  color: #333; /* Darker text color for contrast */
+}
+
+label {
+  font-size: 16px;
+  margin-right: 10px;
+  font-weight: bold;
+  color: #555; /* Subtle color for labels */
+}
+
+select {
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.settings-button {
+  /* display: flex; */
+  justify-content: center; /* Center icon and text */
+  align-items: center;
+  gap: 8px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 200px; /* Match width with other buttons */
+}
+
+.settings-button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.settings-icon {
+  font-size: 20px; /* Slightly larger icon */
+}
+
+input[type="text"],
+input[type="email"] {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 80%; /* Wider input fields */
+  margin: 10px 0;
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+h3 {
+  font-size: 22px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.create-tenant-container {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  margin: 20px auto;
+  max-width: 400px; /* Center the container and limit its width */
+}
+
+.create-tenant-container h3 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.create-tenant-form {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 15px; /* Add spacing between form elements */
+}
+
+.create-tenant-form label {
+  font-size: 16px;
+  font-weight: bold;
+  color: #555;
+}
+
+.create-tenant-form input {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s ease;
+}
+
+.create-tenant-form input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.create-tenant-form button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 200px; /* Fixed width for all buttons */
+  text-align: center; /* Center text inside the button */
+}
+
+.create-tenant-form button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
 }

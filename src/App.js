@@ -2,6 +2,7 @@ import './App.css';
 import { useAuth, useAuthActions, useLoginWithRedirect, ContextHolder, AdminPortal, useTenantsActions } from "@frontegg/react";
 import { useEffect, useState } from 'react';
 import { FaCog } from 'react-icons/fa'; // Import settings icon from react-icons
+import { getVendorToken } from './utils/getVendorToken'; // Import the utility function
 
 function App() {
   const { user, isAuthenticated, tenantsState } = useAuth(); // Import tenantsState
@@ -16,6 +17,21 @@ function App() {
     creatorEmail: '',
   });
   const [allTenants, setAllTenants] = useState([]); // State to store all tenants, including sub-tenants
+  const [vendorToken, setVendorToken] = useState(''); // State to store the vendor token
+
+  useEffect(() => {
+    const fetchVendorToken = async () => {
+      try {
+        const token = await getVendorToken();
+        setVendorToken(token); // Store the token in state
+        console.log("Fetched vendor token:", token); 
+      } catch (error) {
+        console.error('Failed to fetch vendor token:', error);
+      }
+    };
+
+    fetchVendorToken();
+  }, []); // Fetch the vendor token on component mount
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -36,6 +52,11 @@ function App() {
   useEffect(() => {
     const fetchAllTenants = async () => {
       try {
+        if (!vendorToken) {
+          console.warn("Vendor token is not available yet.");
+          return;
+        }
+
         if (!selectedTenant && !tenantsState.tenants?.length) {
           console.warn("No tenant ID or tenants available to fetch hierarchy.");
           return; // Exit early if no tenant ID or tenants are available
@@ -43,7 +64,6 @@ function App() {
 
         console.log("Current tenantsState:", tenantsState); // Log tenantsState
 
-        const vendorToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsInRva2VuSXNzdWVyIjoiZnJvbnRlZ2cifQ.eyJzY29wZXMiOltdLCJ0eXBlIjoidmVuZG9yIiwidmVuZG9ySWQiOiJjOGM0ZjAwZi01MDU3LTQ4MmYtYWIyZS02OGRmYWY1ZGM4Y2UiLCJpYXQiOjE3NDMyNjcxNTAsImV4cCI6MTc0MzM1MzU1MH0.aHueCj5l0xQvTMJoWEk3BGkiC8Fysr9z6-g9jjxtznRSiSH6R7CepIgth2A9azPlvna8rMjKd8QCraImzvuZhELpW4gToCh8sxQYNMFfe1YaUVOtqRF_YgFoRmdOQzTFsqeC9uUVH2TsHeefp_oNpffQ8CBKkwjNoUusIxOso347dKZVZMsauxTVk5rZYN5d9230ScfL09xsAwhRBIk62a6tS3iHB2SWBIUx6tuSn5LmnU3omJSc5wUtVJQ9WOR1ETffmx0YpGfsjPX-cCdlRTuCmBM2WyVrtgOJJjcmuIDjubIjZ_KdYuw_W8tjQmvgi_P1Wuf8r6FDjNpCF40W3w"; // Replace with your vendor token
         const tenantId = selectedTenant || tenantsState.tenants?.[0]?.tenantId; // Use selectedTenant or the first tenant in tenantsState
         if (!tenantId) {
           console.error("No tenant ID available to fetch hierarchy.");
@@ -86,7 +106,7 @@ function App() {
     };
 
     fetchAllTenants();
-  }, [selectedTenant, tenantsState]); // Refetch tenant hierarchy when selectedTenant or tenantsState changes
+  }, [selectedTenant, tenantsState, vendorToken]); // Refetch tenant hierarchy when vendorToken changes
 
   useEffect(() => {
     // Log tenantsState whenever it updates
@@ -111,11 +131,8 @@ function App() {
   };
 
   const handleCreateTenant = async () => {
-    const vendorToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsInRva2VuSXNzdWVyIjoiZnJvbnRlZ2cifQ.eyJzY29wZXMiOltdLCJ0eXBlIjoidmVuZG9yIiwidmVuZG9ySWQiOiJjOGM0ZjAwZi01MDU3LTQ4MmYtYWIyZS02OGRmYWY1ZGM4Y2UiLCJpYXQiOjE3NDMyNjcxNTAsImV4cCI6MTc0MzM1MzU1MH0.aHueCj5l0xQvTMJoWEk3BGkiC8Fysr9z6-g9jjxtznRSiSH6R7CepIgth2A9azPlvna8rMjKd8QCraImzvuZhELpW4gToCh8sxQYNMFfe1YaUVOtqRF_YgFoRmdOQzTFsqeC9uUVH2TsHeefp_oNpffQ8CBKkwjNoUusIxOso347dKZVZMsauxTVk5rZYN5d9230ScfL09xsAwhRBIk62a6tS3iHB2SWBIUx6tuSn5LmnU3omJSc5wUtVJQ9WOR1ETffmx0YpGfsjPX-cCdlRTuCmBM2WyVrtgOJJjcmuIDjubIjZ_KdYuw_W8tjQmvgi_P1Wuf8r6FDjNpCF40W3w"; // Replace with your vendor token
-    console.log("Vendor Token:", vendorToken); // Log the vendor token for debugging
-
     if (!vendorToken) {
-      alert("Vendor token is missing. Please ensure you have a valid vendor token.");
+      alert("Vendor token is not available. Please try again later.");
       return;
     }
 
@@ -217,7 +234,10 @@ function App() {
   };
 
   const fetchTenantsDirectly = async () => {
-    const vendorToken = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsInRva2VuSXNzdWVyIjoiZnJvbnRlZ2cifQ.eyJzY29wZXMiOltdLCJ0eXBlIjoidmVuZG9yIiwidmVuZG9ySWQiOiJjOGM0ZjAwZi01MDU3LTQ4MmYtYWIyZS02OGRmYWY1ZGM4Y2UiLCJpYXQiOjE3NDMyNjcxNTAsImV4cCI6MTc0MzM1MzU1MH0.aHueCj5l0xQvTMJoWEk3BGkiC8Fysr9z6-g9jjxtznRSiSH6R7CepIgth2A9azPlvna8rMjKd8QCraImzvuZhELpW4gToCh8sxQYNMFfe1YaUVOtqRF_YgFoRmdOQzTFsqeC9uUVH2TsHeefp_oNpffQ8CBKkwjNoUusIxOso347dKZVZMsauxTVk5rZYN5d9230ScfL09xsAwhRBIk62a6tS3iHB2SWBIUx6tuSn5LmnU3omJSc5wUtVJQ9WOR1ETffmx0YpGfsjPX-cCdlRTuCmBM2WyVrtgOJJjcmuIDjubIjZ_KdYuw_W8tjQmvgi_P1Wuf8r6FDjNpCF40W3w"; // Replace with your vendor token
+    if (!vendorToken) {
+      console.warn("Vendor token is not available yet.");
+      return;
+    }
 
     try {
       const response = await fetch('https://api.frontegg.com/tenants/resources/tenants/v1', { // Updated URL
@@ -322,7 +342,7 @@ function App() {
             </form>
           </div>
           <div>
-            <button onClick={() => alert(user.accessToken)}>What is my access token?</button>
+            <button onClick={() => alert(user.accessToken)}>My access token?</button>
           </div>
 
           {/* Settings Button - Opens Frontegg Admin Portal */}

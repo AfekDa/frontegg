@@ -117,16 +117,32 @@ function App() {
     try {
       console.log(`Attempting to switch to tenant: ${tenantId}`);
       await switchTenant({ tenantId, silentReload: true }); // Switch tenant
-      console.log(`Switched to tenant: ${tenantId}`);
 
+      // Explicitly check if the tenant switch was successful
+      const currentTenant = tenantsState.tenants?.find((tenant) => tenant.tenantId === tenantId);
+      if (!currentTenant) {
+        throw new Error(`Failed to switch to tenant: ${tenantId}. Tenant not found in the current state.`);
+      }
+
+      console.log(`Switched to tenant: ${tenantId}`);
       await loadTenants(); // Reload tenants to reflect the new tenant
       console.log("Tenants reloaded.");
     } catch (error) {
       console.error("Failed to switch tenant:", error);
+
+      // Check if the error response contains a message
       if (error.response) {
-        console.error("Error response data:", error.response.data); // Log error response data
+        try {
+          const errorData = await error.response.json(); // Parse the error response body
+          console.error("Error response data:", errorData);
+          alert(`Failed to switch tenant: ${errorData.message || "Unknown error occurred."}`);
+        } catch (parseError) {
+          console.error("Failed to parse error response:", parseError);
+          alert("Failed to switch tenant. Please try again.");
+        }
+      } else {
+        alert(`Failed to switch tenant. Please try again. Error: ${error.message}`);
       }
-      alert(`Failed to switch tenant. Please try again. Error: ${error.message}`);
     }
   };
 

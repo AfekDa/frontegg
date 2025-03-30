@@ -1,12 +1,12 @@
 import './App.css';
 import { useAuth, useAuthActions, useLoginWithRedirect, ContextHolder, AdminPortal, useTenantsActions } from "@frontegg/react";
 import { useEffect, useState } from 'react';
-import { FaCog } from 'react-icons/fa'; // Import settings icon from react-icons
-import { getVendorToken } from './utils/getVendorToken'; // Import the utility function
+import { FaCog } from 'react-icons/fa';
+import { getVendorToken } from './utils/getVendorToken'; 
 
 function App() {
-  const { user, isAuthenticated, tenantsState } = useAuth(); // Import tenantsState
-  const { switchTenant } = useAuthActions(); // Removed loadUser
+  const { user, isAuthenticated, tenantsState } = useAuth(); 
+  const { switchTenant } = useAuthActions(); 
   const { loadTenants } = useTenantsActions();
   const loginWithRedirect = useLoginWithRedirect();
   const [selectedTenant, setSelectedTenant] = useState('');
@@ -16,7 +16,7 @@ function App() {
     creatorName: '',
     creatorEmail: '',
   });
-  const [allTenants, setAllTenants] = useState([]); // State to store all tenants, including sub-tenants
+  const [allTenants, setAllTenants] = useState([]); // State to store all tenants
   const [vendorToken, setVendorToken] = useState(''); // State to store the vendor token
 
   useEffect(() => {
@@ -47,7 +47,7 @@ function App() {
     } else if (!selectedTenant && user?.tenantIds?.length > 0) {
       setSelectedTenant(user.tenantIds[0]); // Fallback to the first tenant in user.tenantIds
     }
-  }, [user, tenantsState, selectedTenant]); // Run when user, tenantsState, or selectedTenant changes
+  }, [user, tenantsState, selectedTenant]); 
 
   useEffect(() => {
     const fetchAllTenants = async () => {
@@ -62,7 +62,7 @@ function App() {
           return; // Exit early if no tenant ID or tenants are available
         }
 
-        console.log("Current tenantsState:", tenantsState); // Log tenantsState
+        console.log("Current tenantsState:", tenantsState);
 
         const tenantId = selectedTenant || tenantsState.tenants?.[0]?.tenantId; // Use selectedTenant or the first tenant in tenantsState
         if (!tenantId) {
@@ -75,7 +75,7 @@ function App() {
           headers: {
             Authorization: `Bearer ${vendorToken}`,
             'Content-Type': 'application/json',
-            'frontegg-tenant-id': tenantId, // Include the tenant ID in the header
+            'frontegg-tenant-id': tenantId,
           },
         });
 
@@ -83,8 +83,8 @@ function App() {
           throw new Error(`Failed to fetch tenant hierarchy: ${response.statusText}`);
         }
 
-        const hierarchy = await response.json(); // Parse the response body
-        console.log("Parsed hierarchy response:", hierarchy); // Log the parsed JSON response
+        const hierarchy = await response.json(); 
+        console.log("Parsed hierarchy response:", hierarchy); 
         
 
         // Extract only tenantId from hierarchy.tenants
@@ -97,9 +97,9 @@ function App() {
           ...hierarchyTenantIds, // Include tenant IDs from the hierarchy
         ];
 
-        console.log("Combined tenant IDs:", combinedTenantIds); // Log combined tenant IDs
+        console.log("Combined tenant IDs:", combinedTenantIds); 
 
-        setAllTenants(combinedTenantIds); // Update state with all tenant IDs
+        setAllTenants(combinedTenantIds); 
       } catch (error) {
         console.error("Failed to fetch tenant hierarchy:", error);
       }
@@ -118,7 +118,7 @@ function App() {
       console.log(`Attempting to switch to tenant: ${tenantId}`);
       await switchTenant({ tenantId, silentReload: true }); // Switch tenant
 
-      // Explicitly check if the tenant switch was successful
+      // check if the tenant switch was successful
       const currentTenant = tenantsState.tenants?.find((tenant) => tenant.tenantId === tenantId);
       if (!currentTenant) {
         throw new Error(`Failed to switch to tenant: ${tenantId}. Tenant not found in the current state.`);
@@ -130,7 +130,6 @@ function App() {
     } catch (error) {
       console.error("Failed to switch tenant:", error);
 
-      // Check if the error response contains a message
       if (error.response) {
         try {
           const errorData = await error.response.json(); // Parse the error response body
@@ -161,10 +160,10 @@ function App() {
 
     try {
       // Step 1: Create the tenant
-      const response = await fetch('https://api.frontegg.com/tenants/resources/tenants/v1', { // Updated URL
+      const response = await fetch('https://api.frontegg.com/tenants/resources/tenants/v1', { 
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${vendorToken}`, // Use the vendor token
+          Authorization: `Bearer ${vendorToken}`, 
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(tenantData),
@@ -181,7 +180,6 @@ function App() {
       alert(`Tenant created successfully: ${responseBody.name}`);
       setNewTenantDetails({ name: '', website: '', creatorName: '', creatorEmail: '' }); // Reset form
 
-      // Step 2: Signup user and associate with the new tenant
       const tenantId = responseBody.tenantId;
       const signupRequestBody = {
         provider: "local",
@@ -189,27 +187,27 @@ function App() {
         name: newTenantDetails.creatorName,
         tenantId: tenantId,
         metadata: JSON.stringify({}), // Ensure metadata is a JSON string
-        companyName: newTenantDetails.name, // Use the tenant name as the company name
-        skipInviteEmail: true, // Skip sending an invite email
-        roleIds: [], // Optional roles
+        companyName: newTenantDetails.name,
+        skipInviteEmail: true, 
+        roleIds: [], 
       };
 
-      console.log("Signup Request Body:", signupRequestBody); // Log the request body for debugging
+      console.log("Signup Request Body:", signupRequestBody); 
 
-      const signupResponse = await fetch('https://api.frontegg.com/identity/resources/users/v1/signUp', { // Updated URL
+      const signupResponse = await fetch('https://api.frontegg.com/identity/resources/users/v1/signUp', { 
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${vendorToken}`, // Use the vendor token
+          Authorization: `Bearer ${vendorToken}`, 
           'Content-Type': 'application/json',
-          'frontegg-application-id': 'fe5f039f-4cce-4556-92a7-a3e11bbf1c35', // Replace with your Frontegg App ID
-          'frontegg-vendor-host': 'app-569bcb21sjhg.frontegg.com', // Replace with your Frontegg base URL
+          'frontegg-application-id': 'fe5f039f-4cce-4556-92a7-a3e11bbf1c35', 
+          'frontegg-vendor-host': 'app-569bcb21sjhg.frontegg.com', 
         },
         body: JSON.stringify(signupRequestBody),
       });
 
       if (!signupResponse.ok) {
         const errorResponse = await signupResponse.json();
-        console.error("Signup API Error Response:", errorResponse); // Log the error response for debugging
+        console.error("Signup API Error Response:", errorResponse);
         throw new Error(`Failed to signup user: ${signupResponse.statusText}`);
       }
 
@@ -221,16 +219,16 @@ function App() {
 
       // Step 4: Add the new tenant as a sub-tenant of the current tenant
       const hierarchyRequestBody = {
-        parentTenantId: selectedTenant, // The currently selected tenant
-        childTenantId: tenantId, // The newly created tenant ID
+        parentTenantId: selectedTenant,
+        childTenantId: tenantId, 
       };
 
-      console.log("Hierarchy Request Body:", hierarchyRequestBody); // Log the request body for debugging
+      console.log("Hierarchy Request Body:", hierarchyRequestBody); 
 
-      const hierarchyResponse = await fetch('https://api.frontegg.com/tenants/resources/hierarchy/v1', { // Updated URL
+      const hierarchyResponse = await fetch('https://api.frontegg.com/tenants/resources/hierarchy/v1', { 
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${vendorToken}`, // Use the vendor token
+          Authorization: `Bearer ${vendorToken}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(hierarchyRequestBody),
